@@ -17,7 +17,7 @@ def read(*parts):
 setup(name="hitchpylibrarytoolkit",
       version=read('VERSION').replace('\n', ''),
       description="Build, test, documentation, linting, reformatting and specification code for hitch libraries.",
-      long_description=read('README.rst'),
+      long_description=read('README.md'),
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
