@@ -16,7 +16,7 @@ def read(*parts):
 
 setup(name="hitchpylibrarytoolkit",
       version=read('VERSION').replace('\n', ''),
-      description="Strict, typed YAML parser",
+      description="Build, test, documentation, linting, reformatting and specification code for hitch libraries.",
       long_description=read('README.rst'),
       classifiers=[
           'Development Status :: 4 - Beta',
