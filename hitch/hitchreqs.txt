@@ -1,23 +1,50 @@
+appdirs==1.4.3            # via black
 argcomplete==1.9.4        # via hitchrun
+attrs==18.2.0             # via black
+black==18.6b4             # via hitchpylibrarytoolkit
 certifi==2018.8.24        # via requests
 chardet==3.0.4            # via requests
-click==6.7                # via hitchrun, pip-tools
-colorama==0.3.9           # via hitchrun, prettystack
-commandlib==0.3.4
+click==6.7                # via black, hitchrun, pip-tools
+colorama==0.3.9           # via hitchrun, hitchstory, prettystack
+commandlib==0.3.4         # via hitchrun, hitchrunpy, icommandlib
+dirtemplate==0.1.4        # via hitchpylibrarytoolkit
 first==2.0.1              # via pip-tools
+flake8==3.5.0             # via hitchpylibrarytoolkit
+hitchbuild==0.4.0         # via dirtemplate, hitchbuildpy
+hitchbuildpy==0.4.5       # via hitchpylibrarytoolkit
+hitchpylibrarytoolkit==0.1.0
 hitchrun==0.3.1
+hitchrunpy==0.6.1         # via hitchpylibrarytoolkit
+hitchstory==0.11.1        # via hitchpylibrarytoolkit
+icommandlib==0.4.1        # via hitchrunpy
 idna==2.7                 # via requests
 importlib-metadata==0.4   # via path.py
-jinja2==2.10              # via prettystack
+jinja2==2.10              # via dirtemplate, hitchrunpy, hitchstory, prettystack
 markupsafe==1.0           # via jinja2
-path.py==11.2.0           # via hitchrun, prettystack
+mccabe==0.6.1             # via flake8
+path.py==11.2.0           # via hitchbuild, hitchrun, hitchrunpy, hitchstory, pathquery, prettystack
+pathquery==0.3.0          # via dirtemplate, hitchbuild, hitchbuildpy, hitchstory
+peewee==3.7.0             # via hitchbuild
 pip-tools==2.0.2          # via hitchrun
 pkginfo==1.4.2            # via twine
-prettystack==0.3.0        # via hitchrun
+prettystack==0.3.0        # via hitchrun, hitchrunpy, hitchstory
+psutil==5.4.7             # via icommandlib
+pycodestyle==2.3.1        # via flake8
+pyflakes==1.6.0           # via flake8
+pyte==0.8.0               # via icommandlib
+python-dateutil==2.7.3    # via strictyaml
+python-slugify==1.2.6     # via dirtemplate, hitchbuild, hitchstory
+pyuv==1.4.0               # via icommandlib
 requests-toolbelt==0.8.0  # via twine
 requests==2.19.1          # via requests-toolbelt, twine
-six==1.11.0               # via pip-tools
+ruamel.yaml==0.15.66      # via strictyaml
+six==1.11.0               # via pip-tools, python-dateutil
+strictyaml==0.11.10       # via dirtemplate, hitchstory
+toml==0.9.6               # via black
 tqdm==4.26.0              # via twine
-twine==1.11.0
+twine==1.11.0             # via hitchpylibrarytoolkit
+unidecode==1.0.22         # via python-slugify
 urllib3==1.23             # via requests
+uvloop==0.11.2            # via icommandlib
+wcwidth==0.1.7            # via pyte
 wheel==0.31.1             # via importlib-metadata
