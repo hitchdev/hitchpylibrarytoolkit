@@ -1,7 +1,7 @@
 import hitchbuildpy
 
 
-def project_build(project_name, paths, python_version, libraries):
+def project_build(project_name, paths, python_version, libraries=None):
     pylibrary = (
         hitchbuildpy.PyLibrary(
             name="py{0}".format(python_version),
@@ -15,10 +15,11 @@ def project_build(project_name, paths, python_version, libraries):
         .with_build_path(paths.gen)
     )
 
-    for library_name, library_version in libraries.items():
-        pylibrary = pylibrary.with_packages(
-            "{0}=={1}".format(library_name, library_version)
-        )
+    if libraries is not None:
+        for library_name, library_version in libraries.items():
+            pylibrary = pylibrary.with_packages(
+                "{0}=={1}".format(library_name, library_version)
+            )
 
     pylibrary.ensure_built()
     return pylibrary
