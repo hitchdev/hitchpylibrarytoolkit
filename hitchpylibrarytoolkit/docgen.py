@@ -1,7 +1,12 @@
 import dirtemplate
+from strictyaml import load
 
 
-def docgen(project_dir, story_dir, build_dir):
+def docgen(all_stories, project_dir, story_dir, build_dir):
+    """
+    Generate markdown documentation.
+    """
+
     def title(dirfile):
         assert len(dirfile.text().split("---")) >= 3, "{} doesn't have ---".format(
             dirfile
@@ -18,14 +23,13 @@ def docgen(project_dir, story_dir, build_dir):
         .with_files(
             template_story_jinja2={
                 "using/alpha/{0}.md".format(story.info["docs"]): {"story": story}
-                for story in _storybook({}).ordered_by_name()
+                for story in all_stories.ordered_by_name()
                 if story.info.get("docs") is not None
             }
         )
         .with_vars(
             readme=False,
-            quickstart=_storybook({})
-            .in_filename(story_dir / "quickstart.story")
+            quickstart=all_stories.in_filename(story_dir / "quickstart.story")
             .non_variations()
             .ordered_by_file(),
         )
