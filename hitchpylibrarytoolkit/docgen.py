@@ -1,7 +1,7 @@
 import dirtemplate
 
 
-def docgen(project_dir, story_dir, build_dir)
+def docgen(project_dir, story_dir, build_dir):
     def title(dirfile):
         assert len(dirfile.text().split("---")) >= 3, "{} doesn't have ---".format(dirfile)
         return load(dirfile.text().split("---")[1]).data.get("title", "misc")
