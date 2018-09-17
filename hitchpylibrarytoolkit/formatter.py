@@ -5,7 +5,7 @@ def reformat(project_dir, project_name):
     python_bin.black(project_dir / project_name).run()
     python_bin.black(project_dir / "hitch" / "key.py").run()
     python("-m", "flake8")(
-        DIR.project.joinpath(project_name),
+        project_dir.joinpath(project_name),
         "--max-line-length=100",
         "--exclude=__init__.py",
     ).run()
@@ -15,4 +15,6 @@ def reformat(project_dir, project_name):
         "--exclude=__init__.py",
     ).run()
     print("Reformat / lint success")
+
+
 3
