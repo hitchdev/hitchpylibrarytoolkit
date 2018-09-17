@@ -1,4 +1,5 @@
 from commandlib import Command, python
+from hitchrun import DIR
 
 
 def deploy(version):
