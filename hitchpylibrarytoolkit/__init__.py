@@ -5,4 +5,4 @@ from hitchpylibrarytoolkit.formatter import reformat
 from hitchpylibrarytoolkit.formatter import lint
 
 
-__version__ = "0.1.0"
+__version__ = "DEVELOPMENT_VERSION"
