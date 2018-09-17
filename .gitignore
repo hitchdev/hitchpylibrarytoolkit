@@ -1,0 +1,10 @@
+build/
+dist/
+.cache
+hitchpylibrarytoolkit.egg-info/
+hitch/gen
+__pycache__
+*.pyc
+*.kate-swp
+temp/
+.vscode/
