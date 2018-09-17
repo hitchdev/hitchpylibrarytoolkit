@@ -1,14 +1,23 @@
 argcomplete==1.9.4        # via hitchrun
+certifi==2018.8.24        # via requests
+chardet==3.0.4            # via requests
 click==6.7                # via hitchrun, pip-tools
 colorama==0.3.9           # via hitchrun, prettystack
 commandlib==0.3.4
 first==2.0.1              # via pip-tools
 hitchrun==0.3.1
+idna==2.7                 # via requests
 importlib-metadata==0.4   # via path.py
 jinja2==2.10              # via prettystack
 markupsafe==1.0           # via jinja2
 path.py==11.2.0           # via hitchrun, prettystack
 pip-tools==2.0.2          # via hitchrun
+pkginfo==1.4.2            # via twine
 prettystack==0.3.0        # via hitchrun
+requests-toolbelt==0.8.0  # via twine
+requests==2.19.1          # via requests-toolbelt, twine
 six==1.11.0               # via pip-tools
+tqdm==4.26.0              # via twine
+twine==1.11.0
+urllib3==1.23             # via requests
 wheel==0.31.1             # via importlib-metadata
