@@ -1,7 +1,7 @@
 from commandlib import Command, python
 
 
-def deploy(project_path, name):
+def deploy(project_path, name, version):
     git = Command("git").in_dir(project_path)
     version_file = project_path.joinpath("VERSION")
     old_version = version_file.bytes().decode('utf8')
