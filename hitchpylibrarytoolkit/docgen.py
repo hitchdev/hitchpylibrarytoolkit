@@ -49,7 +49,11 @@ def readmegen(all_stories, project_dir, story_dir, build_dir, project_name):
     template = (
         dirtemplate.DirTemplate("readme", project_dir / "docs", build_dir)
         .with_files(
-            template_story_jinja2={}
+            template_story_jinja2={
+                "using/alpha/{0}.md".format(story.info["docs"]): {"story": story}
+                for story in all_stories.ordered_by_name()
+                if story.info.get("docs") is not None
+            }
         )
         .with_vars(
             readme=True,
