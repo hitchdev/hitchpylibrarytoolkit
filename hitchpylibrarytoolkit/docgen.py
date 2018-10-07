@@ -33,6 +33,7 @@ def docgen(all_stories, project_dir, story_dir, build_dir):
             quickstart=all_stories.in_filename(story_dir / "quickstart.story")
             .non_variations()
             .ordered_by_file(),
+            include_title=True,
         )
         .with_functions(title=title)
     )
