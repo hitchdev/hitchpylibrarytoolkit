@@ -1,11 +1,74 @@
 import dirtemplate
 from strictyaml import load
+from git import Repo
+import jinja2
+from collections import OrderedDict
+
+CHANGELOG_MD_TEMPLATE = """\
+# Changelog
+
+{% for version, changes in version_changes.items() %}
+### {{ version }}
+
+{% for change in changes -%}
+* {{ change }}
+{%- else %}
+No relevant code changes.
+{%- endfor %}
+{% endfor %}
+"""
+
+KEYWORDS = ["FEATURE", "BUGFIX", "BUG", "MINOR", "MAJOR", "PATCH", "PERFORMANCE"]
+
+
+def changelog(project_dir):
+    repo = Repo(project_dir)
+    tag_commits = {tag.commit: tag for tag in repo.tags}
+
+    current_version = None
+    changes = []
+    version_changes = OrderedDict()
+
+    for commit in repo.iter_commits():
+        if commit in tag_commits:
+            current_version = tag_commits[commit].name
+            version_changes[current_version] = changes
+            changes = []
+
+        message = commit.message
+
+        for keyword in KEYWORDS:
+            if message.startswith(keyword):
+                changes.append(message)
+
+    return jinja2.Template(CHANGELOG_MD_TEMPLATE).render(
+        version_changes=version_changes
+    )
+
+
+def directory_template(in_folder, all_stories, project_dir, story_dir, build_dir, readme=False):
+    return (
+        dirtemplate.DirTemplate(in_folder, project_dir / "docs", build_dir)
+        .with_files(
+            template_story_jinja2={
+                "using/alpha/{0}.md".format(story.info["docs"]): {"story": story}
+                for story in all_stories.ordered_by_name()
+                if story.info.get("docs") is not None
+            }
+        )
+        .with_vars(
+            readme=readme,
+            quickstart=all_stories.in_filename(story_dir / "quickstart.story")
+            .non_variations()
+            .ordered_by_file(),
+            include_title=True,
+        )
+        .with_functions(title=title)
+    )
 
 
 def title(dirfile):
-    assert len(dirfile.text().split("---")) >= 3, "{} doesn't have ---".format(
-        dirfile
-    )
+    assert len(dirfile.text().split("---")) >= 3, "{} doesn't have ---".format(dirfile)
     return load(dirfile.text().split("---")[1]).data.get("title", "misc")
 
 
@@ -19,25 +82,10 @@ def docgen(all_stories, project_dir, story_dir, build_dir):
         docfolder.rmtree(ignore_errors=True)
     docfolder.mkdir()
 
-    template = (
-        dirtemplate.DirTemplate("docs", project_dir / "docs", build_dir)
-        .with_files(
-            template_story_jinja2={
-                "using/alpha/{0}.md".format(story.info["docs"]): {"story": story}
-                for story in all_stories.ordered_by_name()
-                if story.info.get("docs") is not None
-            }
-        )
-        .with_vars(
-            readme=False,
-            quickstart=all_stories.in_filename(story_dir / "quickstart.story")
-            .non_variations()
-            .ordered_by_file(),
-            include_title=True,
-        )
-        .with_functions(title=title)
-    )
-    template.ensure_built()
+    directory_template(
+        "docs", all_stories, project_dir, story_dir, build_dir, readme=False
+    ).ensure_built()
+    docfolder.joinpath("changelog.md").write_text(changelog(project_dir))
     print("Docs generated")
 
 
@@ -47,35 +95,18 @@ def readmegen(all_stories, project_dir, story_dir, build_dir, project_name):
         docfolder.rmtree(ignore_errors=True)
     docfolder.mkdir()
 
-    template = (
-        dirtemplate.DirTemplate("readme", project_dir / "docs", build_dir)
-        .with_files(
-            template_story_jinja2={
-                "using/alpha/{0}.md".format(story.info["docs"]): {"story": story}
-                for story in all_stories.ordered_by_name()
-                if story.info.get("docs") is not None
-            }
-        )
-        .with_vars(
-            readme=True,
-            quickstart=all_stories.in_filename(story_dir / "quickstart.story")
-            .non_variations()
-            .ordered_by_file(),
-            include_title=True,
-        )
-        .with_functions(title=title)
-    )
-    template.ensure_built()
-
-    readme_text = docfolder.joinpath("index.md").text()
+    directory_template(
+        "readme", all_stories, project_dir, story_dir, build_dir, readme=True
+    ).ensure_built()
 
     import re
 
     text_with_absolute_links = re.sub(
         r"(\[.*?\])\(((?!http).*?)\)",
         "\g<1>(https://hitchdev.com/{0}/\g<2>)".format(project_name),
-        readme_text
+        docfolder.joinpath("index.md").text(),
     )
 
+    project_dir.joinpath("CHANGELOG.md").write_text(changelog(project_dir))
     project_dir.joinpath("README.md").write_text(text_with_absolute_links)
-    print("README generated")
+    print("README and CHANGELOG generated")

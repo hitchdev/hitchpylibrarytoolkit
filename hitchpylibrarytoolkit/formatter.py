@@ -6,7 +6,7 @@ def lint(project_dir, project_name):
         project_dir.joinpath(project_name),
         "--max-line-length=100",
         "--exclude=__init__.py",
-        "--ignore=E203,W503",              # Ignore list[expression1 : expression2] failures
+        "--ignore=E203,W503",  # Ignore list[expression1 : expression2] failures
     ).run()
     python("-m", "flake8")(
         project_dir.joinpath("hitch", "key.py"),
