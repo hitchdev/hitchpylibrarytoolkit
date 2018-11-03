@@ -8,7 +8,7 @@ CHANGELOG_MD_TEMPLATE = """\
 # Changelog
 
 {% for version, changes in version_changes.items() %}
-### {{ version }}
+### {% if version != None %}{{ version }}{% else %}Latest{% endif %}
 
 {% for change in changes -%}
 * {{ change }}
@@ -31,15 +31,16 @@ def changelog(project_dir):
 
     for commit in repo.iter_commits():
         if commit in tag_commits:
-            current_version = tag_commits[commit].name
             version_changes[current_version] = changes
+            current_version = tag_commits[commit].name
             changes = []
 
         message = commit.message
 
         for keyword in KEYWORDS:
             if message.startswith(keyword):
-                changes.append(message)
+                if message not in changes:    # don't add dupes
+                    changes.append(message)
 
     return jinja2.Template(CHANGELOG_MD_TEMPLATE).render(
         version_changes=version_changes
