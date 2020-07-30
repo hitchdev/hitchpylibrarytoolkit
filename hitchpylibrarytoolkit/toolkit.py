@@ -6,7 +6,8 @@ from hitchpylibrarytoolkit.formatter import reformat
 from hitchpylibrarytoolkit.formatter import lint
 from hitchstory import StoryCollection
 from pathquery import pathquery
-
+from hitchstory import HitchStoryException
+from hitchrun import expected
 
 class ToolkitError(Exception):
     pass
@@ -22,7 +23,9 @@ class ProjectToolkit(object):
     def current_version(self):
         return self._path.project.joinpath("VERSION").text().rstrip()
 
+    @expected(HitchStoryException)
     def bdd(self, *keywords):
+        """Run individual story matching key words."""
         self._stories().only_uninherited().shortcut(*keywords).play()
 
     def _stories(self, **engineargs):
