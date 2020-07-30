@@ -9,6 +9,13 @@ def deploy(version):
     hitchpylibrarytoolkit.deploy(DIR.project, "hitchpylibrarytoolkit", version)
 
 
+def lint():
+    """
+    Lint the package
+    """
+    hitchpylibrarytoolkit.lint(DIR.project, "hitchpylibrarytoolkit")
+
+
 def reformat():
     """
     Reformat using black and then relint.

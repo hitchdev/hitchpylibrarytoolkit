@@ -9,6 +9,7 @@ from pathquery import pathquery
 from hitchstory import HitchStoryException
 from hitchrun import expected
 
+
 class ToolkitError(Exception):
     pass
 
@@ -30,12 +31,19 @@ class ProjectToolkit(object):
 
     def _stories(self, **engineargs):
         return StoryCollection(
-            pathquery(self._path.key / "story").ext("story"), self._engine_class(self._path, **engineargs)
+            pathquery(self._path.key / "story").ext("story"),
+            self._engine_class(self._path, **engineargs),
         )
 
     def prepdeploy(self):
         self.regression()
-        readmegen(self._stories(), self._path.project, self._path.key, self._path.gen), self._project_name)
+        readmegen(
+            self._stories(),
+            self._path.project,
+            self._path.key,
+            self._path.gen,
+            self._project_name,
+        )
 
     def deploy(self, version):
         deploy(self._path.project, self._project_name, version)
@@ -50,4 +58,6 @@ class ProjectToolkit(object):
         docgen(self._stories(), self._path.project, self._path.key, self._path.gen)
 
     def project_build(self, python_version="3.7.0", libraries=None):
-        project_build(self._project_name, self._path, python_version, libraries=libraries)
+        project_build(
+            self._project_name, self._path, python_version, libraries=libraries
+        )

@@ -39,7 +39,7 @@ def changelog(project_dir):
 
         for keyword in KEYWORDS:
             if message.startswith(keyword):
-                if message not in changes:    # don't add dupes
+                if message not in changes:  # don't add dupes
                     changes.append(message)
 
     return jinja2.Template(CHANGELOG_MD_TEMPLATE).render(
@@ -47,7 +47,9 @@ def changelog(project_dir):
     )
 
 
-def directory_template(in_folder, all_stories, project_dir, story_dir, build_dir, readme=False):
+def directory_template(
+    in_folder, all_stories, project_dir, story_dir, build_dir, readme=False
+):
     return (
         dirtemplate.DirTemplate(in_folder, project_dir / "docs", build_dir)
         .with_files(
@@ -104,7 +106,7 @@ def readmegen(all_stories, project_dir, story_dir, build_dir, project_name):
 
     text_with_absolute_links = re.sub(
         r"(\[.*?\])\(((?!http).*?)\)",
-        "\g<1>(https://hitchdev.com/{0}/\g<2>)".format(project_name),
+        r"\g<1>(https://hitchdev.com/{0}/\g<2>)".format(project_name),
         docfolder.joinpath("index.md").text(),
     )
 
