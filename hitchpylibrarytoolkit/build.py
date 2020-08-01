@@ -1,4 +1,48 @@
 import hitchbuildpy
+import hitchbuild
+from copy import copy
+
+
+class PyLibraryBuild(hitchbuild.HitchBuild):
+    def __init__(self, project_name, paths):
+        self._project_name = project_name
+        self._paths = paths
+        self._python_version = "3.7.0"
+
+    @property
+    def pyenv(self):
+        return hitchbuildpy.PyenvBuild(
+            self._paths.share / "python{}".format(self._python_version),
+            self._python_version
+        )
+
+    @property
+    def virtualenv(self):
+        return hitchbuildpy.VirtualenvBuild(
+            build_path=self._paths.gen / "py{}".format(self._python_version),
+            base_python=self.pyenv,
+        )
+
+    @property
+    def bin(self):
+        return self.virtualenv.bin
+
+    def clean(self):
+        self.virtualenv.clean()
+
+    def with_python_version(self, python_version):
+        new_build = copy(self)
+        new_build._python_version = python_version
+        return new_build
+
+    def build(self):
+        pipinstalle = self.virtualenv.incomplete()
+        self.virtualenv.ensure_built()
+        if pipinstalle:
+            self.virtualenv.bin.pip("install", "-e", ".")\
+                               .in_dir(self._paths.project)\
+                               .run()
+        
 
 
 def project_build(project_name, paths, python_version, libraries=None):
