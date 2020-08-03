@@ -15,24 +15,26 @@ class ToolkitError(Exception):
 
 
 class ProjectToolkit(object):
-    def __init__(self, project_name, paths, engine_class):
+    def __init__(self, project_name, paths):
         self._project_name = project_name
         self._path = paths
-        self._engine_class = engine_class
 
     @property
     def current_version(self):
         return self._path.project.joinpath("VERSION").text().rstrip()
 
-    @expected(HitchStoryException)
-    def bdd(self, *keywords):
+    def bdd(self, engine, keywords):
         """Run individual story matching key words."""
-        self._stories().only_uninherited().shortcut(*keywords).play()
+        self._stories(engine).only_uninherited().shortcut(*keywords).play()
 
-    def _stories(self, **engineargs):
+    def regression(self, engine):
+        self._stories(engine).only_uninherited().ordered_by_name().play()
+        
+
+    def _stories(self, engine):
         return StoryCollection(
             pathquery(self._path.key / "story").ext("story"),
-            self._engine_class(self._path, **engineargs),
+            engine,
         )
 
     def prepdeploy(self):
