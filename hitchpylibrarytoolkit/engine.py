@@ -1,7 +1,7 @@
 from hitchrunpy import ExamplePythonCode, HitchRunPyException
 from hitchstory import BaseEngine, GivenDefinition, GivenProperty
 from hitchstory import no_stacktrace_for, validate
-from strictyaml import Map, Optional, Str, Int
+from strictyaml import Map, MapPattern, Optional, Str, Int
 from templex import Templex
 import time
 
@@ -15,29 +15,30 @@ class Engine(BaseEngine):
     def __init__(self, build, rewrite=False, cprofile=False):
         self._build = build
         self._rewrite = rewrite
+        self._cprofile = cprofile
 
     def set_up(self):
         self._build.ensure_built()
 
     def _story_friendly_output(self, text):
-        return self._build.story_friendly_output(text)
+        return text
 
     @no_stacktrace_for(AssertionError)
     @no_stacktrace_for(HitchRunPyException)
     @validate(
         code=Str(),
         will_output=Str(),
+        environment_vars=MapPattern(Str(), Str()),
         raises=Map({
             Optional("type"): Str(),
             Optional("message"): Str(),
         })
     )
     def run(self, code, will_output=None, environment_vars=None, raises=None):
-        self.example_py_code = ExamplePythonCode(self._build.bin.python, self._build.working)\
+        self.example_py_code = self._build.example_python_code\
             .with_terminal_size(160, 100)\
             .with_env(**{} if environment_vars is None else environment_vars)\
-            .with_setup_code(self.given['setup'])\
-            .in_dir(self.path.state)
+            .with_setup_code(self.given['setup'])
 
         to_run = self.example_py_code.with_code(code)
 

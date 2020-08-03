@@ -1,4 +1,5 @@
 import hitchbuildpy
+import hitchrunpy
 import hitchbuild
 from copy import copy
 
@@ -27,6 +28,10 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
     def bin(self):
         return self.virtualenv.bin
 
+    @property
+    def working(self):
+        return self._paths.gen / "working"
+
     def clean(self):
         self.virtualenv.clean()
 
@@ -35,6 +40,13 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
         new_build._python_version = python_version
         return new_build
 
+    @property
+    def example_python_code(self):
+        return hitchrunpy.ExamplePythonCode(
+            self.bin.python,
+            self.working,
+        )
+
     def build(self):
         pipinstalle = self.virtualenv.incomplete()
         self.virtualenv.ensure_built()
@@ -42,6 +54,10 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
             self.virtualenv.bin.pip("install", "-e", ".")\
                                .in_dir(self._paths.project)\
                                .run()
+        if self.working.exists():
+            self.working.rmtree()
+        self.working.mkdir()
+        
         
 
 
