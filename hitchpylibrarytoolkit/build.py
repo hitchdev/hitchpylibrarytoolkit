@@ -44,7 +44,7 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
     def example_python_code(self):
         return hitchrunpy.ExamplePythonCode(
             self.bin.python,
-            self.working,
+            self._paths.gen,
         )
 
     def build(self):
@@ -54,9 +54,6 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
             self.virtualenv.bin.pip("install", "-e", ".")\
                                .in_dir(self._paths.project)\
                                .run()
-        if self.working.exists():
-            self.working.rmtree()
-        self.working.mkdir()
         
         
 

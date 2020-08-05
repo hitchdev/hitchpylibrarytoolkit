@@ -4,6 +4,7 @@ from hitchpylibrarytoolkit.docgen import readmegen
 from hitchpylibrarytoolkit.build import project_build
 from hitchpylibrarytoolkit.formatter import reformat
 from hitchpylibrarytoolkit.formatter import lint
+from hitchpylibrarytoolkit.build import PyLibraryBuild
 from hitchstory import StoryCollection
 from pathquery import pathquery
 from hitchstory import HitchStoryException
@@ -22,6 +23,13 @@ class ProjectToolkit(object):
     @property
     def current_version(self):
         return self._path.project.joinpath("VERSION").text().rstrip()
+
+    @property
+    def build(self):
+        return PyLibraryBuild(
+            self._project_name,
+            self._path,
+        )
 
     def bdd(self, engine, keywords):
         """Run individual story matching key words."""
@@ -58,8 +66,3 @@ class ProjectToolkit(object):
 
     def docgen(self):
         docgen(self._stories(), self._path.project, self._path.key, self._path.gen)
-
-    def project_build(self, python_version="3.7.0", libraries=None):
-        project_build(
-            self._project_name, self._path, python_version, libraries=libraries
-        )
