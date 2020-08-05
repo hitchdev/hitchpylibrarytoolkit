@@ -10,6 +10,7 @@ class Engine(BaseEngine):
     given_definition = GivenDefinition(
         python_version=GivenProperty(Str()),
         setup=GivenProperty(Str()),
+        files=GivenProperty(MapPattern(Str(), Str())),
     )
 
     def __init__(self, build, rewrite=False, cprofile=False):
@@ -19,6 +20,13 @@ class Engine(BaseEngine):
 
     def set_up(self):
         self._build.ensure_built()
+
+        for filename, contents in self.given.get('files', {}).items():
+            filepath = self._build.working.parent.joinpath(filename)
+            if not filepath.dirname().exists():
+                filepath.dirname().makedirs()
+            filepath.write_text(contents)
+
 
     def _story_friendly_output(self, text):
         return text
