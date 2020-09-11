@@ -46,7 +46,7 @@ class Engine(BaseEngine):
         self.example_py_code = self._build.example_python_code\
             .with_terminal_size(160, 100)\
             .with_env(**{} if environment_vars is None else environment_vars)\
-            .with_setup_code(self.given['setup'])
+            .with_setup_code(self.given.get("setup", ""))
 
         to_run = self.example_py_code.with_code(code)
 
