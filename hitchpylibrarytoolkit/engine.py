@@ -27,6 +27,8 @@ class Engine(BaseEngine):
                 filepath.dirname().makedirs()
             filepath.write_text(contents)
 
+    def assert_text(self, will_output, actual_output):
+        Templex(will_output).assert_match(actual_output)
 
     def _story_friendly_output(self, text):
         return text
@@ -61,7 +63,7 @@ class Engine(BaseEngine):
 
         if will_output is not None:
             try:
-                Templex(will_output).assert_match(actual_output)
+                self.assert_text(will_output, actual_output)
             except AssertionError:
                 if self._rewrite:
                     self.current_step.update(**{"will output": actual_output})
@@ -75,7 +77,7 @@ class Engine(BaseEngine):
             try:
                 result.exception_was_raised(exception_type)
                 exception_message = self._story_friendly_output(result.exception.message)
-                Templex(exception_message).assert_match(message)
+                self.assert_text(exception_message, message)
             except AssertionError:
                 if self._rewrite:
                     new_raises = raises.copy()
