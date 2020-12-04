@@ -9,6 +9,7 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
         self._project_name = project_name
         self._paths = paths
         self._python_version = "3.7.0"
+        self._packages = {}
 
     @property
     def pyenv(self):
@@ -19,10 +20,14 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
 
     @property
     def virtualenv(self):
-        return hitchbuildpy.VirtualenvBuild(
+        vb = hitchbuildpy.VirtualenvBuild(
             build_path=self._paths.gen / "py{}".format(self._python_version),
             base_python=self.pyenv,
         )
+        debugrequirements = self._paths.key.joinpath("debugrequirements.txt").abspath()
+        if debugrequirements.exists():
+            vb = vb.with_requirementstxt(debugrequirements)
+        return vb
 
     @property
     def bin(self):
@@ -38,6 +43,11 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
     def with_python_version(self, python_version):
         new_build = copy(self)
         new_build._python_version = python_version
+        return new_build
+
+    def with_packages(self, packages):
+        new_build = copy(self)
+        new_build._packages = {**self._packages, **packages}
         return new_build
 
     @property
