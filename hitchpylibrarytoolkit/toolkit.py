@@ -64,5 +64,8 @@ class ProjectToolkit(object):
     def reformat(self):
         reformat(self._path.project, self._project_name)
 
-    def docgen(self):
-        docgen(self._stories(), self._path.project, self._path.key, self._path.gen)
+    def docgen(self, engine):
+        docgen(self._stories(engine), self._path.project, self._path.key / "story", self._path.gen)
+
+    def readmegen(self, engine):
+        readmegen(self._stories(engine), self._path.project, self._path.key / "story", self._path.gen, self._project_name)

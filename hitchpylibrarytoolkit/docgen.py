@@ -48,10 +48,10 @@ def changelog(project_dir):
 
 
 def directory_template(
-    in_folder, all_stories, project_dir, story_dir, build_dir, readme=False
+    all_stories, project_dir, story_dir, build_dir, readme=False
 ):
     return (
-        dirtemplate.DirTemplate(in_folder, project_dir / "docs", build_dir)
+        dirtemplate.DirTemplate(project_dir / "docs", build_dir)
         .with_files(
             template_story_jinja2={
                 "using/alpha/{0}.md".format(story.info["docs"]): {"story": story}
@@ -86,7 +86,7 @@ def docgen(all_stories, project_dir, story_dir, build_dir):
     docfolder.mkdir()
 
     directory_template(
-        "docs", all_stories, project_dir, story_dir, build_dir, readme=False
+        all_stories, project_dir, story_dir, docfolder, readme=False
     ).ensure_built()
     docfolder.joinpath("changelog.md").write_text(changelog(project_dir))
     print("Docs generated")
@@ -99,7 +99,7 @@ def readmegen(all_stories, project_dir, story_dir, build_dir, project_name):
     docfolder.mkdir()
 
     directory_template(
-        "readme", all_stories, project_dir, story_dir, build_dir, readme=True
+        all_stories, project_dir, story_dir, docfolder, readme=True
     ).ensure_built()
 
     import re
