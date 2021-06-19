@@ -47,9 +47,7 @@ def changelog(project_dir):
     )
 
 
-def directory_template(
-    all_stories, project_dir, story_dir, build_dir, readme=False
-):
+def directory_template(all_stories, project_dir, story_dir, build_dir, readme=False):
     return (
         dirtemplate.DirTemplate(project_dir / "docs", build_dir)
         .with_files(

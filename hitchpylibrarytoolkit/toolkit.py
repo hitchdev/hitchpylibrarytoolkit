@@ -1,14 +1,10 @@
 from hitchpylibrarytoolkit.deploy import deploy
 from hitchpylibrarytoolkit.docgen import docgen
 from hitchpylibrarytoolkit.docgen import readmegen
-from hitchpylibrarytoolkit.build import project_build
-from hitchpylibrarytoolkit.formatter import reformat
-from hitchpylibrarytoolkit.formatter import lint
 from hitchpylibrarytoolkit.build import PyLibraryBuild
+from commandlib import python, python_bin
 from hitchstory import StoryCollection
 from pathquery import pathquery
-from hitchstory import HitchStoryException
-from hitchrun import expected
 
 
 class ToolkitError(Exception):
@@ -26,10 +22,7 @@ class ProjectToolkit(object):
 
     @property
     def build(self):
-        return PyLibraryBuild(
-            self._project_name,
-            self._path,
-        )
+        return PyLibraryBuild(self._project_name, self._path,)
 
     def bdd(self, engine, keywords):
         """Run individual story matching key words."""
@@ -37,12 +30,10 @@ class ProjectToolkit(object):
 
     def regression(self, engine):
         self._stories(engine).only_uninherited().ordered_by_name().play()
-        
 
     def _stories(self, engine):
         return StoryCollection(
-            pathquery(self._path.key / "story").ext("story"),
-            engine,
+            pathquery(self._path.key / "story").ext("story"), engine,
         )
 
     def prepdeploy(self):
@@ -62,22 +53,34 @@ class ProjectToolkit(object):
         if exclude is None:
             exclude = "__init__.py"
         python("-m", "flake8")(
-            project_dir.joinpath(self._project_name),
+            self._path.project.joinpath(self._project_name),
             "--max-line-length=100",
             "--exclude={}".format(",".join(exclude)),
             "--ignore=E203,W503",  # Ignore list[expression1 : expression2] failures
         ).run()
         python("-m", "flake8")(
-            project_dir.joinpath("hitch", "key.py"),
+            self._path.project.joinpath("hitch", "key.py"),
             "--max-line-length=100",
             "--ignore=E203,W503",
         ).run()
 
     def reformat(self):
-        reformat(self._path.project, self._project_name)
+        python_bin.black(self._path.project / self._project_name).run()
+        python_bin.black(self._path.project / "hitch" / "key.py").run()
 
     def docgen(self, engine):
-        docgen(self._stories(engine), self._path.project, self._path.key / "story", self._path.gen)
+        docgen(
+            self._stories(engine),
+            self._path.project,
+            self._path.key / "story",
+            self._path.gen,
+        )
 
     def readmegen(self, engine):
-        readmegen(self._stories(engine), self._path.project, self._path.key / "story", self._path.gen, self._project_name)
+        readmegen(
+            self._stories(engine),
+            self._path.project,
+            self._path.key / "story",
+            self._path.gen,
+            self._project_name,
+        )

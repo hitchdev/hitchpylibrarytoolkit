@@ -15,7 +15,7 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
     def pyenv(self):
         return hitchbuildpy.PyenvBuild(
             self._paths.share / "python{}".format(self._python_version),
-            self._python_version
+            self._python_version,
         )
 
     @property
@@ -52,20 +52,15 @@ class PyLibraryBuild(hitchbuild.HitchBuild):
 
     @property
     def example_python_code(self):
-        return hitchrunpy.ExamplePythonCode(
-            self.bin.python,
-            self._paths.gen,
-        )
+        return hitchrunpy.ExamplePythonCode(self.bin.python, self._paths.gen,)
 
     def build(self):
         pipinstalle = self.virtualenv.incomplete()
         self.virtualenv.ensure_built()
         if pipinstalle:
-            self.virtualenv.bin.pip("install", "-e", ".")\
-                               .in_dir(self._paths.project)\
-                               .run()
-        
-        
+            self.virtualenv.bin.pip("install", "-e", ".").in_dir(
+                self._paths.project
+            ).run()
 
 
 def project_build(project_name, paths, python_version, libraries=None):
