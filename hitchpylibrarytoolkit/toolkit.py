@@ -58,8 +58,20 @@ class ProjectToolkit(object):
     def deploy(self, version):
         deploy(self._path.project, self._project_name, version)
 
-    def lint(self):
-        lint(self._path.project, self._project_name)
+    def lint(self, exclude=None):
+        if exclude is None:
+            exclude = "__init__.py"
+        python("-m", "flake8")(
+            project_dir.joinpath(self._project_name),
+            "--max-line-length=100",
+            "--exclude={}".format(",".join(exclude)),
+            "--ignore=E203,W503",  # Ignore list[expression1 : expression2] failures
+        ).run()
+        python("-m", "flake8")(
+            project_dir.joinpath("hitch", "key.py"),
+            "--max-line-length=100",
+            "--ignore=E203,W503",
+        ).run()
 
     def reformat(self):
         reformat(self._path.project, self._project_name)
