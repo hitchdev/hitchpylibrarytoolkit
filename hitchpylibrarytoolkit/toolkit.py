@@ -2,13 +2,10 @@ from hitchpylibrarytoolkit.deploy import deploy
 from hitchpylibrarytoolkit.docgen import docgen
 from hitchpylibrarytoolkit.docgen import readmegen
 from hitchpylibrarytoolkit.build import PyLibraryBuild
-from commandlib import python, python_bin
+from hitchpylibrarytoolkit.exceptions import ToolkitError
+from commandlib import python, python_bin, CommandError
 from hitchstory import StoryCollection
 from pathquery import pathquery
-
-
-class ToolkitError(Exception):
-    pass
 
 
 class ProjectToolkit(object):
@@ -50,23 +47,33 @@ class ProjectToolkit(object):
         deploy(self._path.project, self._project_name, version)
 
     def lint(self, exclude=None):
-        if exclude is None:
-            exclude = "__init__.py"
-        python("-m", "flake8")(
-            self._path.project.joinpath(self._project_name),
-            "--max-line-length=100",
-            "--exclude={}".format(",".join(exclude)),
-            "--ignore=E203,W503",  # Ignore list[expression1 : expression2] failures
-        ).run()
-        python("-m", "flake8")(
-            self._path.project.joinpath("hitch", "key.py"),
-            "--max-line-length=100",
-            "--ignore=E203,W503",
-        ).run()
+        try:
+            if exclude is None:
+                exclude = "__init__.py"
+            python("-m", "flake8")(
+                self._path.project.joinpath(self._project_name),
+                "--max-line-length=100",
+                "--exclude={}".format(",".join(exclude)),
+                "--ignore=E203,W503",  # Ignore list[expression1 : expression2] failures
+            ).run()
+            python("-m", "flake8")(
+                self._path.project.joinpath("hitch", "key.py"),
+                "--max-line-length=100",
+                "--ignore=E203,W503",
+            ).run()
+        except CommandError:
+            raise ToolkitError("Linter failed")
 
     def reformat(self):
         python_bin.black(self._path.project / self._project_name).run()
         python_bin.black(self._path.project / "hitch" / "key.py").run()
+        
+    def validate_reformatting(self):
+        try:
+            python_bin.black(self._path.project / self._project_name, "--check").run()
+            python_bin.black(self._path.project / "hitch" / "key.py", "--check").run()
+        except CommandError:
+            raise ToolkitError("Black failed")
 
     def docgen(self, engine):
         docgen(
@@ -83,4 +90,14 @@ class ProjectToolkit(object):
             self._path.key / "story",
             self._path.gen,
             self._project_name,
+        )
+    
+    def validate_readmegen(self, engine):
+        readmegen(
+            self._stories(engine),
+            self._path.project,
+            self._path.key / "story",
+            self._path.gen,
+            self._project_name,
+            check=True
         )

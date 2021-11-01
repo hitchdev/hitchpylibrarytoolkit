@@ -1,4 +1,5 @@
 import dirtemplate
+from hitchpylibrarytoolkit.exceptions import ToolkitError
 from strictyaml import load
 from git import Repo
 import jinja2
@@ -44,7 +45,7 @@ def changelog(project_dir):
 
     return jinja2.Template(CHANGELOG_MD_TEMPLATE).render(
         version_changes=version_changes
-    )
+    ).replace("\r\n", "\n")
 
 
 def directory_template(all_stories, project_dir, story_dir, build_dir, readme=False):
@@ -90,7 +91,7 @@ def docgen(all_stories, project_dir, story_dir, build_dir):
     print("Docs generated")
 
 
-def readmegen(all_stories, project_dir, story_dir, build_dir, project_name):
+def readmegen(all_stories, project_dir, story_dir, build_dir, project_name, check=False):
     docfolder = build_dir / "readme"
     if docfolder.exists():
         docfolder.rmtree(ignore_errors=True)
@@ -108,6 +109,13 @@ def readmegen(all_stories, project_dir, story_dir, build_dir, project_name):
         docfolder.joinpath("index.md").text(),
     )
 
-    project_dir.joinpath("CHANGELOG.md").write_text(changelog(project_dir))
-    project_dir.joinpath("README.md").write_text(text_with_absolute_links)
-    print("README and CHANGELOG generated")
+    if check:
+        if changelog(project_dir) != project_dir.joinpath("CHANGELOG.md").read_text():
+            raise ToolkitError("Generated CHANGELOG.md hasn't been updated. Run hk readmegen and try again.")
+        if text_with_absolute_links != project_dir.joinpath("README.md").read_text():
+            raise ToolkitError("Generated README.md hasn't been updated. Run hk readmegen and try again.")
+        print("README and CHANGELOG are correct.")
+    else:
+        project_dir.joinpath("CHANGELOG.md").write_text(changelog(project_dir))
+        project_dir.joinpath("README.md").write_text(text_with_absolute_links)
+        print("README and CHANGELOG generated")
