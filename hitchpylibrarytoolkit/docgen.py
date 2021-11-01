@@ -107,7 +107,7 @@ def readmegen(all_stories, project_dir, story_dir, build_dir, project_name, chec
         r"(\[.*?\])\(((?!http).*?)\)",
         r"\g<1>(https://hitchdev.com/{0}/\g<2>)".format(project_name),
         docfolder.joinpath("index.md").text(),
-    )
+    ).replace("\r\n", "\n")
 
     if check:
         if changelog(project_dir) != project_dir.joinpath("CHANGELOG.md").read_text():
