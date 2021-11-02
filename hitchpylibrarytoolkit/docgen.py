@@ -4,6 +4,7 @@ from strictyaml import load
 from git import Repo
 import jinja2
 from collections import OrderedDict
+from templex import Templex
 
 CHANGELOG_MD_TEMPLATE = """\
 # Changelog
@@ -110,10 +111,8 @@ def readmegen(all_stories, project_dir, story_dir, build_dir, project_name, chec
     ).replace("\r\n", "\n")
 
     if check:
-        if changelog(project_dir) != project_dir.joinpath("CHANGELOG.md").read_text():
-            raise ToolkitError("Generated CHANGELOG.md hasn't been updated. Run hk readmegen and try again.")
-        if text_with_absolute_links != project_dir.joinpath("README.md").read_text():
-            raise ToolkitError("Generated README.md hasn't been updated. Run hk readmegen and try again.")
+        Templex(changelog(project_dir)).assert_match(project_dir.joinpath("CHANGELOG.md").read_text())
+        Templex(text_with_absolute_links).assert_match(project_dir.joinpath("README.md").read_text())
         print("README and CHANGELOG are correct.")
     else:
         project_dir.joinpath("CHANGELOG.md").write_text(changelog(project_dir))
