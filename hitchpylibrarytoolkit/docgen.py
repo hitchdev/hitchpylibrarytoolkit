@@ -80,7 +80,7 @@ def docgen(all_stories, project_dir, story_dir, build_dir):
     Generate markdown documentation.
     """
 
-    docfolder = build_dir / "docs"
+    docfolder = build_dir / "docs" / "src"
     if docfolder.exists():
         docfolder.rmtree(ignore_errors=True)
     docfolder.mkdir()
