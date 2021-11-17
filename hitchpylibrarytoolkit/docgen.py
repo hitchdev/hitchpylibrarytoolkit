@@ -5,6 +5,8 @@ from git import Repo
 import jinja2
 from collections import OrderedDict
 from templex import Templex
+from pathquery import pathquery
+from path import Path
 
 CHANGELOG_MD_TEMPLATE = """\
 # Changelog
@@ -51,7 +53,7 @@ def changelog(project_dir):
 
 def directory_template(all_stories, project_dir, story_dir, build_dir, readme=False):
     return (
-        dirtemplate.DirTemplate(project_dir / "docs", build_dir)
+        dirtemplate.DirTemplate(project_dir / "docs" / "src", build_dir)
         .with_files(
             template_story_jinja2={
                 "using/alpha/{0}.md".format(story.info["docs"]): {"story": story}
@@ -75,21 +77,43 @@ def title(dirfile):
     return load(dirfile.text().split("---")[1]).data.get("title", "misc")
 
 
-def docgen(all_stories, project_dir, story_dir, build_dir):
+def docgen(all_stories, project_dir, story_dir, build_dir, temp_dir, check=False):
     """
     Generate markdown documentation.
     """
 
-    docfolder = build_dir / "docs" / "src"
-    if docfolder.exists():
-        docfolder.rmtree(ignore_errors=True)
-    docfolder.mkdir()
+    docfolder = build_dir
+    if check:
+        if temp_dir.exists():
+            temp_dir.rmtree(ignore_errors=True)
+        temp_dir.mkdir()
 
-    directory_template(
-        all_stories, project_dir, story_dir, docfolder, readme=False
-    ).ensure_built()
-    docfolder.joinpath("changelog.md").write_text(changelog(project_dir))
-    print("Docs generated")
+        directory_template(
+            all_stories, project_dir, story_dir, temp_dir, readme=False
+        ).ensure_built()
+        temp_dir.joinpath("changelog.md").write_text(changelog(project_dir))
+        temp_dir.joinpath("fingerprint.txt").remove()
+        print("Docs checked")
+        
+        assert len(list(pathquery(temp_dir))) == len(list(pathquery(docfolder))), \
+            "Different real docs to generated"
+        
+        for temp_docfile in pathquery(temp_dir):
+            if not temp_docfile.isdir():
+                equivalent_realdocfile = Path(temp_docfile.replace(temp_dir, docfolder))
+                assert equivalent_realdocfile.bytes() == temp_docfile.bytes(), \
+                    "Generated docs different from real, please rerun docgen."
+    else:
+        if docfolder.exists():
+            docfolder.rmtree(ignore_errors=True)
+        docfolder.mkdir()
+    
+        directory_template(
+            all_stories, project_dir, story_dir, docfolder, readme=False
+        ).ensure_built()
+        docfolder.joinpath("changelog.md").write_text(changelog(project_dir))
+        docfolder.joinpath("fingerprint.txt").remove()
+        print("Docs generated")
 
 
 def readmegen(all_stories, project_dir, story_dir, build_dir, project_name, check=False):

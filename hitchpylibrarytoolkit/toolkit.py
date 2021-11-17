@@ -80,7 +80,18 @@ class ProjectToolkit(object):
             self._stories(engine),
             self._path.project,
             self._path.key / "story",
-            self._path.gen,
+            self._path.project / "docs" / "public",
+            self._path.gen / "tmpdocs",
+        )
+    
+    def validate_docgen(self, engine):
+        docgen(
+            self._stories(engine),
+            self._path.project,
+            self._path.key / "story",
+            self._path.project / "docs" / "public",
+            self._path.gen / "tmpdocs",
+            check=True,
         )
 
     def readmegen(self, engine):
