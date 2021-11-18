@@ -7,6 +7,8 @@ from collections import OrderedDict
 from templex import Templex
 from pathquery import pathquery
 from path import Path
+import difflib
+import mimetypes
 
 CHANGELOG_MD_TEMPLATE = """\
 # Changelog
@@ -101,8 +103,18 @@ def docgen(all_stories, project_dir, story_dir, build_dir, temp_dir, check=False
         for temp_docfile in pathquery(temp_dir):
             if not temp_docfile.isdir():
                 equivalent_realdocfile = Path(temp_docfile.replace(temp_dir, docfolder))
-                assert equivalent_realdocfile.bytes() == temp_docfile.bytes(), \
-                    "Generated docs different from real, please rerun docgen."
+                print("Checking {}".format(equivalent_realdocfile))
+                textfile = mimetypes.guess_type(temp_docfile)[0] is not None and mimetypes.guess_type(temp_docfile)[0].startswith("text")
+                
+                if textfile:
+                    error_message = "Generated file different from real,\n{}".format(''.join(difflib.ndiff(
+                        equivalent_realdocfile.text().splitlines(1),
+                        temp_docfile.text().splitlines(1),
+                    )))
+                    assert equivalent_realdocfile.text() == temp_docfile.text(), error_message
+                else:
+                    assert equivalent_realdocfile.bytes() == temp_docfile.bytes(), \
+                        "Generated file different from real, please rerun docgen or report bug."
     else:
         if docfolder.exists():
             docfolder.rmtree(ignore_errors=True)
