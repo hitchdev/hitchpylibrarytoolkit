@@ -1,5 +1,4 @@
 import dirtemplate
-from hitchpylibrarytoolkit.exceptions import ToolkitError
 from strictyaml import load
 from git import Repo
 import jinja2
@@ -30,8 +29,7 @@ KEYWORDS = ["FEATURE", "BUGFIX", "BUG", "MINOR", "MAJOR", "PATCH", "PERFORMANCE"
 def changelog(project_dir):
     repo = Repo(project_dir)
     tag_commits = {tag.commit: tag for tag in repo.tags}
-
-    current_version = None
+    current_version = Path(project_dir).joinpath("VERSION").text().rstrip()
     changes = []
     version_changes = OrderedDict()
 
@@ -48,9 +46,11 @@ def changelog(project_dir):
                 if message not in changes:  # don't add dupes
                     changes.append(message)
 
-    return jinja2.Template(CHANGELOG_MD_TEMPLATE).render(
-        version_changes=version_changes
-    ).replace("\r\n", "\n")
+    return (
+        jinja2.Template(CHANGELOG_MD_TEMPLATE)
+        .render(version_changes=version_changes)
+        .replace("\r\n", "\n")
+    )
 
 
 def directory_template(all_stories, project_dir, story_dir, build_dir, readme=False):
@@ -96,30 +96,42 @@ def docgen(all_stories, project_dir, story_dir, build_dir, temp_dir, check=False
         temp_dir.joinpath("changelog.md").write_text(changelog(project_dir))
         temp_dir.joinpath("fingerprint.txt").remove()
         print("Docs checked")
-        
-        assert len(list(pathquery(temp_dir))) == len(list(pathquery(docfolder))), \
-            "Different real docs to generated"
-        
+
+        assert len(list(pathquery(temp_dir))) == len(
+            list(pathquery(docfolder))
+        ), "Different real docs to generated"
+
         for temp_docfile in pathquery(temp_dir):
             if not temp_docfile.isdir():
                 equivalent_realdocfile = Path(temp_docfile.replace(temp_dir, docfolder))
                 print("Checking {}".format(equivalent_realdocfile))
-                textfile = mimetypes.guess_type(temp_docfile)[0] is not None and mimetypes.guess_type(temp_docfile)[0].startswith("text")
-                
+                textfile = mimetypes.guess_type(temp_docfile)[
+                    0
+                ] is not None and mimetypes.guess_type(temp_docfile)[0].startswith(
+                    "text"
+                )
+
                 if textfile:
-                    error_message = "Generated file different from real,\n{}".format(''.join(difflib.ndiff(
-                        equivalent_realdocfile.text().splitlines(1),
-                        temp_docfile.text().splitlines(1),
-                    )))
-                    assert equivalent_realdocfile.text() == temp_docfile.text(), error_message
+                    error_message = "Generated file different from real,\n{}".format(
+                        "".join(
+                            difflib.ndiff(
+                                equivalent_realdocfile.text().splitlines(1),
+                                temp_docfile.text().splitlines(1),
+                            )
+                        )
+                    )
+                    assert (
+                        equivalent_realdocfile.text() == temp_docfile.text()
+                    ), error_message
                 else:
-                    assert equivalent_realdocfile.bytes() == temp_docfile.bytes(), \
-                        "Generated file different from real, please rerun docgen or report bug."
+                    assert (
+                        equivalent_realdocfile.bytes() == temp_docfile.bytes()
+                    ), "Generated file different from real, please rerun docgen or report bug."
     else:
         if docfolder.exists():
             docfolder.rmtree(ignore_errors=True)
         docfolder.mkdir()
-    
+
         directory_template(
             all_stories, project_dir, story_dir, docfolder, readme=False
         ).ensure_built()
@@ -128,7 +140,9 @@ def docgen(all_stories, project_dir, story_dir, build_dir, temp_dir, check=False
         print("Docs generated")
 
 
-def readmegen(all_stories, project_dir, story_dir, build_dir, project_name, check=False):
+def readmegen(
+    all_stories, project_dir, story_dir, build_dir, project_name, check=False
+):
     docfolder = build_dir / "readme"
     if docfolder.exists():
         docfolder.rmtree(ignore_errors=True)
@@ -147,8 +161,12 @@ def readmegen(all_stories, project_dir, story_dir, build_dir, project_name, chec
     ).replace("\r\n", "\n")
 
     if check:
-        Templex(changelog(project_dir)).assert_match(project_dir.joinpath("CHANGELOG.md").read_text())
-        Templex(text_with_absolute_links).assert_match(project_dir.joinpath("README.md").read_text())
+        Templex(changelog(project_dir)).assert_match(
+            project_dir.joinpath("CHANGELOG.md").read_text()
+        )
+        Templex(text_with_absolute_links).assert_match(
+            project_dir.joinpath("README.md").read_text()
+        )
         print("README and CHANGELOG are correct.")
     else:
         project_dir.joinpath("CHANGELOG.md").write_text(changelog(project_dir))
