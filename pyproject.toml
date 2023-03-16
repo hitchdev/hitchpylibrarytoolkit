@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["hitchpylibrarytoolkit"]
+
+[project]
+name = "hitchpylibrarytoolkit"
+authors = [
+    {name = "Colm O'Connor", email = "colm.oconnor.github@gmail.com"},
+]
+description = "Build, test, documentation, linting, reformatting and specification code for hitch libraries."
+license = {text = "MIT"}
+requires-python = ">=3.7.0"
+keywords = ["yaml"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: Libraries",
+    "Natural Language :: English",
+]
+dependencies = [
+    "hitchstory>=0.12.0",
+    "hitchrunpy>=0.6.1",
+    "hitchbuild",
+    "dirtemplate>=0.1.4",
+    "templex>=0.2.0",
+    "twine>=0.11.0",
+    "flake8>=3.5.0",
+    "gitpython",
+    "black",
+    "ipython",
+    "q>=2.6",
+    "build",
+    "wheel",
+    "click",
+]
+dynamic = ["version", "readme"]
+
+[project.urls]
+homepage = "https://hitchdev.com/"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md",], content-type = "text/markdown"}
+version = {file = "VERSION"}
