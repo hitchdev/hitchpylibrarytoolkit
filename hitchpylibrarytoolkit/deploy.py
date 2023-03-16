@@ -1,4 +1,5 @@
 from commandlib import Command, python
+import os
 
 
 def deploy(project_name, github_path, temp_path, testpypi=False):

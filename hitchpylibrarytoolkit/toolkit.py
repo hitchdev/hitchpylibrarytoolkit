@@ -19,7 +19,10 @@ class ProjectToolkit(object):
 
     @property
     def build(self):
-        return PyLibraryBuild(self._project_name, self._path,)
+        return PyLibraryBuild(
+            self._project_name,
+            self._path,
+        )
 
     def bdd(self, engine, keywords):
         """Run individual story matching key words."""
@@ -30,7 +33,8 @@ class ProjectToolkit(object):
 
     def _stories(self, engine):
         return StoryCollection(
-            pathquery(self._path.key / "story").ext("story"), engine,
+            pathquery(self._path.key / "story").ext("story"),
+            engine,
         )
 
     def prepdeploy(self, engine, version):

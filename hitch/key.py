@@ -7,7 +7,6 @@ PROJECT_NAME = "hitchpylibrarytoolkit"
 GITHUB_PATH = "hitchdev/hitchpylibrarytoolkit"
 
 
-
 class Directories:
     gen = Path("/gen")
     key = Path("/src/hitch/")
@@ -18,12 +17,17 @@ class Directories:
 DIR = Directories()
 
 
+toolkit = hitchpylibrarytoolkit.ProjectToolkit(
+    "hitchpylibrarytoolkit",
+    DIR,
+)
+
+
 @group(invoke_without_command=True)
 @pass_context
 def cli(ctx):
     """Integration test command line interface."""
     pass
-
 
 
 @cli.command()
@@ -67,21 +71,21 @@ def deploy(test="notest"):
     DIR.gen.joinpath(PROJECT_NAME).rmtree()
 
 
-
+@cli.command()
 def lint():
     """
     Lint the package
     """
-    hitchpylibrarytoolkit.lint(DIR.project, "hitchpylibrarytoolkit")
+    toolkit.lint()
 
 
+@cli.command()
 def reformat():
     """
     Reformat using black and then relint.
     """
-    hitchpylibrarytoolkit.reformat(DIR.project, "hitchpylibrarytoolkit")
+    toolkit.reformat()
 
 
 if __name__ == "__main__":
     cli()
-

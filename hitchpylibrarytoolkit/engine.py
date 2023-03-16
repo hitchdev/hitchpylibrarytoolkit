@@ -10,7 +10,10 @@ class Engine(BaseEngine):
     given_definition = GivenDefinition(
         python_version=GivenProperty(Str()),
         setup=GivenProperty(Str()),
-        files=GivenProperty(MapPattern(Str(), Str())),
+        files=GivenProperty(
+            MapPattern(Str(), Str()),
+            inherit_via=GivenProperty.OVERRIDE,
+        ),
     )
 
     def __init__(self, build, rewrite=False, cprofile=False):
