@@ -32,7 +32,7 @@ def deploy(test="notest"):
     """
     Deploy to pypi as specified version.
     """
-    from commandlib import python
+    from commandlib import python, Command
 
     git = Command("git")
 
