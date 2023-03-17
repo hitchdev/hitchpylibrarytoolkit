@@ -1,7 +1,6 @@
 from hitchpylibrarytoolkit.deploy import deploy
 from hitchpylibrarytoolkit.docgen import docgen
 from hitchpylibrarytoolkit.docgen import readmegen
-from hitchpylibrarytoolkit.build import PyLibraryBuild
 from hitchpylibrarytoolkit.exceptions import ToolkitError
 from commandlib import python, python_bin, Command, CommandError
 from hitchstory import StoryCollection
@@ -16,13 +15,6 @@ class ProjectToolkit(object):
     @property
     def current_version(self):
         return self._path.project.joinpath("VERSION").text().rstrip()
-
-    @property
-    def build(self):
-        return PyLibraryBuild(
-            self._project_name,
-            self._path,
-        )
 
     def bdd(self, engine, keywords):
         """Run individual story matching key words."""

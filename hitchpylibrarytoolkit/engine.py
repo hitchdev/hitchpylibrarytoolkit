@@ -5,7 +5,7 @@ from strictyaml import Map, MapPattern, Optional, Str, Int
 from templex import Templex
 import time
 
-
+"""
 class Engine(BaseEngine):
     given_definition = GivenDefinition(
         python_version=GivenProperty(Str()),
@@ -98,3 +98,4 @@ class Engine(BaseEngine):
     def on_success(self):
         if self._rewrite:
             self.new_story.save()
+"""
