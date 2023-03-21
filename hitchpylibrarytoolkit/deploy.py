@@ -1,4 +1,5 @@
 from commandlib import Command, python
+from path import Path
 import os
 
 
@@ -7,6 +8,10 @@ def deploy(project_name, github_path, temp_path, testpypi=False):
 
     if temp_path.joinpath(project_name).exists():
         temp_path.joinpath(project_name).rmtree()
+
+    Path("/root/.ssh/known_hosts").write_text(
+        Command("ssh-keyscan", "github.com").output()
+    )
 
     git("clone", "git@github.com:{}.git".format(github_path)).in_dir(temp_path).run()
     project = temp_path / project_name
