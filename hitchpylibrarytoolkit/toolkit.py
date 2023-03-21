@@ -2,6 +2,9 @@ from hitchpylibrarytoolkit.deploy import deploy
 from hitchpylibrarytoolkit.docgen import docgen
 from hitchpylibrarytoolkit.docgen import readmegen
 from hitchpylibrarytoolkit.exceptions import ToolkitError
+from hitchpylibrarytoolkit.project_docs import ProjectDocumentation
+from hitchpylibrarytoolkit import pyenv
+import hitchpylibrarytoolkit
 from commandlib import python, python_bin, Command, CommandError
 from hitchstory import StoryCollection
 from pathquery import pathquery
@@ -157,9 +160,89 @@ class ProjectToolkit(object):
 
 
 class ProjectToolkitV2(ProjectToolkit):
-    def __init__(self, name, slug, github_address):
+    def __init__(self, name, slug, github_address, image=""):
         self._name = name
         self._project_name = slug
         self._github_address = github_address
         self.DIR = Directories()
         self._path = self.DIR
+        self._image = image
+
+    def devenv(self):
+        env = pyenv.DevelopmentVirtualenv(
+            pyenv.Pyenv(self.DIR.gen / "pyenv"),
+            self.DIR.project.joinpath("hitch", "devenv.yml"),
+            self.DIR.project.joinpath("hitch", "debugrequirements.txt"),
+            self.DIR.project,
+            self.DIR.project.joinpath("pyproject.toml").text(),
+        )
+        env.ensure_built()
+        return env
+
+    def deploy(self, testpypi=False):
+        hitchpylibrarytoolkit.deploy.deploy(
+            self._project_name,
+            self._github_address,
+            self.DIR.gen,
+            testpypi=testpypi,
+        )
+    
+    def draft_docs(self, storybook):
+        ProjectDocumentation(
+            storybook,
+            self.DIR.project,
+            self.DIR.project / "docs" / "draft",
+            self._name,
+            self._github_address,
+            image=self._image,
+        ).generate()
+    
+    def publish(self, storybook):
+        if self.DIR.gen.joinpath(self._project_name).exists():
+            self.DIR.gen.joinpath(self._project_name).rmtree()
+
+        Path("/root/.ssh/known_hosts").write_text(
+            Command("ssh-keyscan", "github.com").output()
+        )
+        Command(
+            "git", "clone", "git@github.com:{}.git".format(
+                self._github_address
+            )
+        ).in_dir(self.DIR.gen).run()
+
+        git = Command("git").in_dir(self.DIR.gen / self._project_name)
+        git("config", "user.name", "Bot").run()
+        git("config", "user.email", "bot@hitchdev.com").run()
+        git("rm", "-r", "docs/public").run()
+
+        ProjectDocumentation(
+            storybook,
+            self.DIR.project,
+            self.DIR.gen / self._project_name / "docs" / "public",
+            self._name,
+            self._github_address,
+            image=self._image,
+        ).generate()
+        
+        ProjectDocumentation(
+            storybook,
+            self.DIR.project,
+            self.DIR.gen / self._project_name / "docs" / "draft",
+            self._name,
+            self._github_address,
+            image="",
+        ).generate(readme=True)
+
+        self.DIR.project.joinpath("docs", "draft", "index.md").copy(
+            self.DIR.gen / self._project_name / "README.md"
+        )
+        self.DIR.project.joinpath("docs", "draft", "changelog.md").copy(
+            self.DIR.gen / self._project_name / "CHANGELOG.md"
+        )
+
+        git("add", self.DIR.gen / self._project_name).run()
+        git("commit", "-m", "DOCS : Regenerated docs.").in_dir(
+            self.DIR.gen / self._project_name
+        ).run()
+
+        git("push").run()
