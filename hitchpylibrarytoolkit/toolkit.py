@@ -5,6 +5,14 @@ from hitchpylibrarytoolkit.exceptions import ToolkitError
 from commandlib import python, python_bin, Command, CommandError
 from hitchstory import StoryCollection
 from pathquery import pathquery
+from path import Path
+
+
+class Directories:
+    gen = Path("/gen")
+    key = Path("/src/hitch/")
+    project = Path("/src/")
+    share = Path("/gen")
 
 
 class ProjectToolkit(object):
@@ -145,3 +153,13 @@ class ProjectToolkit(object):
             self._project_name,
             check=True,
         )
+
+
+
+class ProjectToolkitV2(ProjectToolkit):
+    def __init__(self, name, slug, github_address):
+        self._name = name
+        self._project_name = slug
+        self._github_address = github_address
+        self.DIR = Directories()
+        self._path = self.DIR
