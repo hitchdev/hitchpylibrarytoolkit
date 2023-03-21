@@ -28,11 +28,12 @@ dependencies = [
     "templex>=0.2.0",
     "twine>=0.11.0",
     "flake8>=3.5.0",
+    "pip-tools>=6.12.3",
     "gitpython",
     "black",
     "ipython",
     "q>=2.6",
-    "build",
+    "build>=0.10.0",
     "wheel",
     "click",
 ]
