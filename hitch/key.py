@@ -17,9 +17,10 @@ class Directories:
 DIR = Directories()
 
 
-toolkit = hitchpylibrarytoolkit.ProjectToolkit(
+toolkit = hitchpylibrarytoolkit.ProjectToolkitV2(
+    "HitchPyLibraryToolkit",
     "hitchpylibrarytoolkit",
-    DIR,
+    "hitchdev/hitchpylibrarytoolkit",
 )
 
 
@@ -31,13 +32,17 @@ def cli(ctx):
 
 
 @cli.command()
-@argument("test", required=False)
-def deploy(test="test"):
+def deploy():
     """
     Deploy to pypi as specified version.
     """
-    testpypi = not (test == "live")
-    toolkit.deploy(testpypi=testpypi)
+    hitchpylibrarytoolkit.deploy.deploy(
+        PROJECT_NAME,
+        "hitchdev/hitchpylibrarytoolkit",
+        DIR.gen,
+        testpypi=False,
+    )
+
 
 
 @cli.command()
