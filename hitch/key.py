@@ -7,21 +7,13 @@ PROJECT_NAME = "hitchpylibrarytoolkit"
 GITHUB_PATH = "hitchdev/hitchpylibrarytoolkit"
 
 
-class Directories:
-    gen = Path("/gen")
-    key = Path("/src/hitch/")
-    project = Path("/src/")
-    share = Path("/gen")
-
-
-DIR = Directories()
-
-
 toolkit = hitchpylibrarytoolkit.ProjectToolkitV2(
     "HitchPyLibraryToolkit",
     "hitchpylibrarytoolkit",
     "hitchdev/hitchpylibrarytoolkit",
 )
+
+DIR = toolkit.DIR
 
 
 @group(invoke_without_command=True)
