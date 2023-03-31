@@ -24,17 +24,13 @@ def cli(ctx):
 
 
 @cli.command()
-def deploy():
+@argument("test", required=False)
+def deploy(test="test"):
     """
     Deploy to pypi as specified version.
     """
-    hitchpylibrarytoolkit.deploy.deploy(
-        PROJECT_NAME,
-        "hitchdev/hitchpylibrarytoolkit",
-        DIR.gen,
-        testpypi=False,
-    )
-
+    testpypi = not (test == "live")
+    toolkit.deploy(testpypi=testpypi)
 
 
 @cli.command()
@@ -51,7 +47,7 @@ def reformat():
     Reformat using black and then relint.
     """
     toolkit.reformat()
-    
+
 
 @cli.command()
 def build():
