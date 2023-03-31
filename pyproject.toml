@@ -33,7 +33,7 @@ dependencies = [
     "black",
     "ipython",
     "q>=2.6",
-    "build>=0.10.0",
+    "build==0.10.0",
     "wheel",
     "click",
 ]
