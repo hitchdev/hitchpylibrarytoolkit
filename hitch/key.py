@@ -50,6 +50,14 @@ def reformat():
 
 
 @cli.command()
+def packagetest():
+    """
+    Test packaging.
+    """
+    toolkit.package_test()
+
+
+@cli.command()
 def build():
     pass
 

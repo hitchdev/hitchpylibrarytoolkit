@@ -144,7 +144,11 @@ class ReleaseVirtualenv(hitchbuild.HitchBuild):
                     self._pyenv_build,
                     self._pyenv_build.latest_version(),
                 ),
-                packages=["wheel", "build", "twine"],
+                packages=[
+                    PythonRequirements(
+                        ["wheel", "build", "twine"]
+                    ),
+                ],
             )
             self.venv.ensure_built()
             self.refingerprint()
