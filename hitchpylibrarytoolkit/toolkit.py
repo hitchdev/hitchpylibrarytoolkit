@@ -177,12 +177,18 @@ class ProjectToolkitV2(ProjectToolkit):
         return env
 
     def deploy(self, testpypi=False):
+        relenv = pyenv.ReleaseVirtualenv(
+            pyenv.Pyenv(self.DIR.gen / "pyenv")
+        )
+        relenv.ensure_built()
+        
         hitchpylibrarytoolkit.deploy.deploy(
             self._project_name,
             self._github_address,
             self.DIR.gen,
             testpypi=testpypi,
             dryrun=False,
+            python_cmd = Command(relenv.python_path),
         )
     
     def package_test(self):
