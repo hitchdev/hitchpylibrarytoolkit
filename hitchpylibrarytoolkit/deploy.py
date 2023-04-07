@@ -3,8 +3,11 @@ from path import Path
 import os
 
 
-def deploy(project_name, github_path, temp_path, testpypi=False, dryrun=False):
+def deploy(project_name, github_path, temp_path, testpypi=False, dryrun=False, python_cmd=None):
     git = Command("git")
+    
+    if python_cmd is None:
+        python_cmd = python
 
     if temp_path.joinpath(project_name).exists():
         temp_path.joinpath(project_name).rmtree()
@@ -19,8 +22,8 @@ def deploy(project_name, github_path, temp_path, testpypi=False, dryrun=False):
     initpy = project.joinpath(project_name, "__init__.py")
     original_initpy_contents = initpy.bytes().decode("utf8")
     initpy.write_text(original_initpy_contents.replace("DEVELOPMENT_VERSION", version))
-    python("-m", "pip", "wheel", ".", "-w", "dist").in_dir(project).run()
-    python("-m", "build", "--sdist").in_dir(project).run()
+    python_cmd("-m", "pip", "wheel", ".", "-w", "dist").in_dir(project).run()
+    python_cmd("-m", "build", "--sdist").in_dir(project).run()
     initpy.write_text(original_initpy_contents)
 
     # Upload to pypi
@@ -30,7 +33,7 @@ def deploy(project_name, github_path, temp_path, testpypi=False, dryrun=False):
     wheel_args += ["dist/{}-{}-py3-none-any.whl".format(project_name, version)]
 
     if not dryrun:
-        python(*wheel_args).in_dir(project).with_env(
+        python_cmd(*wheel_args).in_dir(project).with_env(
             TWINE_USERNAME="__token__",
             TWINE_PASSWORD=os.getenv("PYPITOKEN"),
         ).run()
@@ -41,7 +44,7 @@ def deploy(project_name, github_path, temp_path, testpypi=False, dryrun=False):
     sdist_args += ["dist/{0}-{1}.tar.gz".format(project_name, version)]
     
     if not dryrun:
-        python(*sdist_args).in_dir(project).with_env(
+        python_cmd(*sdist_args).in_dir(project).with_env(
             TWINE_USERNAME="__token__",
             TWINE_PASSWORD=os.getenv("PYPITOKEN"),
         ).run()

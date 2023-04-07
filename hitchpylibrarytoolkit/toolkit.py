@@ -186,12 +186,18 @@ class ProjectToolkitV2(ProjectToolkit):
         )
     
     def package_test(self):
+        relenv = pyenv.ReleaseVirtualenv(
+            pyenv.Pyenv(self.DIR.gen / "pyenv")
+        )
+        relenv.ensure_built()
+
         hitchpylibrarytoolkit.deploy.deploy(
             self._project_name,
             self._github_address,
             self.DIR.gen,
             testpypi=True,
             dryrun=True,
+            python_cmd = Command(relenv.python_path),
         )
 
     def draft_docs(self, storybook):

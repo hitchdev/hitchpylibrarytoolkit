@@ -118,6 +118,38 @@ class EnvirotestVirtualenv(hitchbuild.HitchBuild):
         self.venv.ensure_built()
 
 
+class ReleaseVirtualenv(hitchbuild.HitchBuild):
+    def __init__(self, pyenv_build):
+        self._pyenv_build = pyenv_build
+    
+    @property
+    def build_path(self):
+        return self._pyenv_build.build_path / "versions" / "relenv"
+
+    @property
+    def fingerprint_path(self):
+        return self.build_path / "fingerprint.txt"
+
+    @property
+    def python_path(self):
+        return self.build_path / "bin" / "python"
+    
+    def build(self):
+        self._pyenv_build.ensure_built()
+
+        if not self.build_path.exists():
+            self.venv = ProjectVirtualenv(
+                "relenv",
+                PyVersion(
+                    self._pyenv_build,
+                    self._pyenv_build.latest_version(),
+                ),
+                packages=["wheel", "build", "twine"],
+            )
+            self.venv.ensure_built()
+            self.refingerprint()
+
+
 class DevelopmentVirtualenv(hitchbuild.HitchBuild):
     def __init__(
         self,
@@ -342,6 +374,14 @@ class Pyenv(hitchbuild.HitchBuild):
     @property
     def pyenv(self):
         return Command(self.bin.pyenv).with_env(PYENV_ROOT=self.build_path)
+
+    def latest_version(self):
+        return [
+            version.strip()
+            for version in self.pyenv("install", "-l").output().split("\n")
+            if version.strip().startswith("3")
+            and "dev" not in version
+        ][-2]
 
     def available_versions_above_and_including(self, minimum_version):
         return [
