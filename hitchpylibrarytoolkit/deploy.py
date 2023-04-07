@@ -3,7 +3,7 @@ from path import Path
 import os
 
 
-def deploy(project_name, github_path, temp_path, testpypi=False):
+def deploy(project_name, github_path, temp_path, testpypi=False, dryrun=False):
     git = Command("git")
 
     if temp_path.joinpath(project_name).exists():
@@ -29,19 +29,22 @@ def deploy(project_name, github_path, temp_path, testpypi=False):
         wheel_args += ["--repository", "testpypi"]
     wheel_args += ["dist/{}-{}-py3-none-any.whl".format(project_name, version)]
 
-    python(*wheel_args).in_dir(project).with_env(
-        TWINE_USERNAME="__token__",
-        TWINE_PASSWORD=os.getenv("PYPITOKEN"),
-    ).run()
+    if not dryrun:
+        python(*wheel_args).in_dir(project).with_env(
+            TWINE_USERNAME="__token__",
+            TWINE_PASSWORD=os.getenv("PYPITOKEN"),
+        ).run()
 
     sdist_args = ["-m", "twine", "upload"]
     if testpypi:
         sdist_args += ["--repository", "testpypi"]
     sdist_args += ["dist/{0}-{1}.tar.gz".format(project_name, version)]
-    python(*sdist_args).in_dir(project).with_env(
-        TWINE_USERNAME="__token__",
-        TWINE_PASSWORD=os.getenv("PYPITOKEN"),
-    ).run()
+    
+    if not dryrun:
+        python(*sdist_args).in_dir(project).with_env(
+            TWINE_USERNAME="__token__",
+            TWINE_PASSWORD=os.getenv("PYPITOKEN"),
+        ).run()
 
     # Clean up
     temp_path.joinpath(project_name).rmtree()

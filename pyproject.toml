@@ -25,6 +25,7 @@ dependencies = [
     "hitchrunpy>=0.6.1",
     "hitchbuild",
     "dirtemplate>=0.1.4",
+    "dirtempl>=0.1.3",
     "templex>=0.2.0",
     "twine>=0.11.0",
     "flake8>=3.5.0",

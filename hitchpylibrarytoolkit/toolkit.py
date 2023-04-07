@@ -86,9 +86,7 @@ class ProjectToolkit(object):
             "upload",
             "dist/{0}-{1}.tar.gz".format(self._project_name, version),
         ).in_dir(self._path.project).run()
-
-    def deploy(self, version):
-        deploy(self._path.project, self._project_name, version)
+        
 
     def lint(self, exclude=None):
         try:
@@ -184,6 +182,16 @@ class ProjectToolkitV2(ProjectToolkit):
             self._github_address,
             self.DIR.gen,
             testpypi=testpypi,
+            dryrun=False,
+        )
+    
+    def package_test(self):
+        hitchpylibrarytoolkit.deploy.deploy(
+            self._project_name,
+            self._github_address,
+            self.DIR.gen,
+            testpypi=True,
+            dryrun=True,
         )
 
     def draft_docs(self, storybook):
