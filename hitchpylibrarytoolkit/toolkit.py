@@ -156,7 +156,6 @@ class ProjectToolkit(object):
         )
 
 
-
 class ProjectToolkitV2(ProjectToolkit):
     def __init__(self, name, slug, github_address, image=""):
         self._name = name
@@ -200,7 +199,7 @@ class ProjectToolkitV2(ProjectToolkit):
             dryrun=True,
             python_cmd = Command(relenv.python_path),
         )
-    
+
     def draft_docs(self, storybook):
         ProjectDocumentation(
             storybook,
@@ -210,7 +209,7 @@ class ProjectToolkitV2(ProjectToolkit):
             self._github_address,
             image=self._image,
         ).generate()
-    
+
     def publish(self, storybook):
         if self.DIR.gen.joinpath(self._project_name).exists():
             self.DIR.gen.joinpath(self._project_name).rmtree()
@@ -219,9 +218,7 @@ class ProjectToolkitV2(ProjectToolkit):
             Command("ssh-keyscan", "github.com").output()
         )
         Command(
-            "git", "clone", "git@github.com:{}.git".format(
-                self._github_address
-            )
+            "git", "clone", "git@github.com:{}.git".format(self._github_address)
         ).in_dir(self.DIR.gen).run()
 
         git = Command("git").in_dir(self.DIR.gen / self._project_name)
@@ -237,7 +234,7 @@ class ProjectToolkitV2(ProjectToolkit):
             self._github_address,
             image=self._image,
         ).generate()
-        
+
         ProjectDocumentation(
             storybook,
             self.DIR.project,
