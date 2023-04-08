@@ -1,4 +1,3 @@
-import dirtemplate
 from strictyaml import load
 from git import Repo
 import jinja2
