@@ -9,6 +9,7 @@ from commandlib import python, python_bin, Command, CommandError
 from hitchstory import StoryCollection
 from pathquery import pathquery
 from path import Path
+import os
 
 
 class Directories:
@@ -223,9 +224,18 @@ class ProjectToolkitV2(ProjectToolkit):
         Path("/root/.ssh/known_hosts").write_text(
             Command("ssh-keyscan", "github.com").output()
         )
-        Command(
-            "git", "clone", "git@github.com:{}.git".format(self._github_address)
-        ).in_dir(self.DIR.gen).run()
+        
+        if os.getenv("CI") == "true":
+            Command(
+                "git", "clone", "https://{}@github.com/{}.git".format(
+                    os.getenv("GITHUBTOKEN").rstrip(),
+                    self._github_address,
+                )
+            ).in_dir(self.DIR.gen).run()
+        else:
+            Command(
+                "git", "clone", "git@github.com:{}.git".format(self._github_address)
+            ).in_dir(self.DIR.gen).run()
 
         git = Command("git").in_dir(self.DIR.gen / self._project_name)
         git("config", "user.name", "Bot").run()
