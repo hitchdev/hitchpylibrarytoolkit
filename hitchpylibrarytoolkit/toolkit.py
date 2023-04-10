@@ -225,7 +225,8 @@ class ProjectToolkitV2(ProjectToolkit):
             Command("ssh-keyscan", "github.com").output()
         )
         
-        if os.getenv("CI") == "true":
+        print(os.getenv("CI"))
+        if os.getenv("CI").lower() == "true":
             Command(
                 "git", "clone", "https://{}@github.com/{}.git".format(
                     os.getenv("GITHUBTOKEN").rstrip(),
