@@ -260,10 +260,10 @@ class ProjectToolkitV2(ProjectToolkit):
             image="",
         ).generate(readme=True)
 
-        self.DIR.project.joinpath("docs", "draft", "index.md").copy(
+        self.DIR.gen.joinpath(self._project_name, "docs", "draft", "index.md").copy(
             self.DIR.gen / self._project_name / "README.md"
         )
-        self.DIR.project.joinpath("docs", "draft", "changelog.md").copy(
+        self.DIR.gen.joinpath(self._project_name, "docs", "draft", "changelog.md").copy(
             self.DIR.gen / self._project_name / "CHANGELOG.md"
         )
 
