@@ -273,4 +273,19 @@ class ProjectToolkitV2(ProjectToolkit):
             self.DIR.gen / self._project_name
         ).run()
 
-        git("push").run()
+        if os.getenv("CI").lower() == "true":
+            import stat
+            import os
+            git(
+                "config",
+                "credential.https://github.com.username", os.getenv("GITHUBTOKEN").rstrip()
+            ).run()
+            Path("/gen/askpass.sh").write_text(
+                "echo {}".format(os.getenv("GITHUBTOKEN").rstrip())
+            )
+            
+            st = os.stat('/gen/askpass.sh')
+            os.chmod('/gen/askpass.sh', st.st_mode | stat.S_IEXEC)
+            git("push").with_env(GIT_ASKPASS="/gen/askpass.sh").run()
+        else:
+            git("push").run()
