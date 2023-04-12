@@ -121,7 +121,7 @@ class EnvirotestVirtualenv(hitchbuild.HitchBuild):
 class ReleaseVirtualenv(hitchbuild.HitchBuild):
     def __init__(self, pyenv_build):
         self._pyenv_build = pyenv_build
-    
+
     @property
     def build_path(self):
         return self._pyenv_build.build_path / "versions" / "relenv"
@@ -133,7 +133,7 @@ class ReleaseVirtualenv(hitchbuild.HitchBuild):
     @property
     def python_path(self):
         return self.build_path / "bin" / "python"
-    
+
     def build(self):
         self._pyenv_build.ensure_built()
 
@@ -145,9 +145,7 @@ class ReleaseVirtualenv(hitchbuild.HitchBuild):
                     self._pyenv_build.latest_version(),
                 ),
                 packages=[
-                    PythonRequirements(
-                        ["wheel", "build", "twine"]
-                    ),
+                    PythonRequirements(["wheel", "build", "twine"]),
                 ],
             )
             self.venv.ensure_built()
@@ -383,8 +381,7 @@ class Pyenv(hitchbuild.HitchBuild):
         return [
             version.strip()
             for version in self.pyenv("install", "-l").output().split("\n")
-            if version.strip().startswith("3")
-            and "dev" not in version
+            if version.strip().startswith("3") and "dev" not in version
         ][-2]
 
     def available_versions_above_and_including(self, minimum_version):

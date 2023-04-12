@@ -9,7 +9,7 @@ from commandlib import python, python_bin, Command, CommandError
 from hitchstory import StoryCollection
 from pathquery import pathquery
 from path import Path
-import os
+from os import getenv
 
 
 class Directories:
@@ -87,7 +87,6 @@ class ProjectToolkit(object):
             "upload",
             "dist/{0}-{1}.tar.gz".format(self._project_name, version),
         ).in_dir(self._path.project).run()
-        
 
     def lint(self, exclude=None):
         try:
@@ -178,24 +177,20 @@ class ProjectToolkitV2(ProjectToolkit):
         return env
 
     def deploy(self, testpypi=False):
-        relenv = pyenv.ReleaseVirtualenv(
-            pyenv.Pyenv(self.DIR.gen / "pyenv")
-        )
+        relenv = pyenv.ReleaseVirtualenv(pyenv.Pyenv(self.DIR.gen / "pyenv"))
         relenv.ensure_built()
-        
+
         hitchpylibrarytoolkit.deploy.deploy(
             self._project_name,
             self._github_address,
             self.DIR.gen,
             testpypi=testpypi,
             dryrun=False,
-            python_cmd = Command(relenv.python_path),
+            python_cmd=Command(relenv.python_path),
         )
-    
+
     def package_test(self):
-        relenv = pyenv.ReleaseVirtualenv(
-            pyenv.Pyenv(self.DIR.gen / "pyenv")
-        )
+        relenv = pyenv.ReleaseVirtualenv(pyenv.Pyenv(self.DIR.gen / "pyenv"))
         relenv.ensure_built()
 
         hitchpylibrarytoolkit.deploy.deploy(
@@ -204,7 +199,7 @@ class ProjectToolkitV2(ProjectToolkit):
             self.DIR.gen,
             testpypi=True,
             dryrun=True,
-            python_cmd = Command(relenv.python_path),
+            python_cmd=Command(relenv.python_path),
         )
 
     def draft_docs(self, storybook):
@@ -224,14 +219,16 @@ class ProjectToolkitV2(ProjectToolkit):
         Path("/root/.ssh/known_hosts").write_text(
             Command("ssh-keyscan", "github.com").output()
         )
-        
-        print(os.getenv("CI"))
-        if os.getenv("CI").lower() == "true":
+
+        print(getenv("CI"))
+        if getenv("CI").lower() == "true":
             Command(
-                "git", "clone", "https://{}@github.com/{}.git".format(
-                    os.getenv("GITHUBTOKEN").rstrip(),
+                "git",
+                "clone",
+                "https://{}@github.com/{}.git".format(
+                    getenv("GITHUBTOKEN").rstrip(),
                     self._github_address,
-                )
+                ),
             ).in_dir(self.DIR.gen).run()
         else:
             Command(
@@ -273,19 +270,21 @@ class ProjectToolkitV2(ProjectToolkit):
             self.DIR.gen / self._project_name
         ).run()
 
-        if os.getenv("CI").lower() == "true":
+        if getenv("CI").lower() == "true":
             import stat
             import os
+
             git(
                 "config",
-                "credential.https://github.com.username", os.getenv("GITHUBTOKEN").rstrip()
+                "credential.https://github.com.username",
+                getenv("GITHUBTOKEN").rstrip(),
             ).run()
             Path("/gen/askpass.sh").write_text(
-                "echo {}".format(os.getenv("GITHUBTOKEN").rstrip())
+                "echo {}".format(getenv("GITHUBTOKEN").rstrip())
             )
-            
-            st = os.stat('/gen/askpass.sh')
-            os.chmod('/gen/askpass.sh', st.st_mode | stat.S_IEXEC)
+
+            st = os.stat("/gen/askpass.sh")
+            os.chmod("/gen/askpass.sh", st.st_mode | stat.S_IEXEC)
             git("push").with_env(GIT_ASKPASS="/gen/askpass.sh").run()
         else:
             git("push").run()

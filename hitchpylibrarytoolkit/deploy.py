@@ -3,9 +3,11 @@ from path import Path
 import os
 
 
-def deploy(project_name, github_path, temp_path, testpypi=False, dryrun=False, python_cmd=None):
+def deploy(
+    project_name, github_path, temp_path, testpypi=False, dryrun=False, python_cmd=None
+):
     git = Command("git")
-    
+
     if python_cmd is None:
         python_cmd = python
 
@@ -42,7 +44,7 @@ def deploy(project_name, github_path, temp_path, testpypi=False, dryrun=False, p
     if testpypi:
         sdist_args += ["--repository", "testpypi"]
     sdist_args += ["dist/{0}-{1}.tar.gz".format(project_name, version)]
-    
+
     if not dryrun:
         python_cmd(*sdist_args).in_dir(project).with_env(
             TWINE_USERNAME="__token__",
