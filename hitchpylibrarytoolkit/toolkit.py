@@ -257,9 +257,16 @@ class ProjectToolkitV2(ProjectToolkit):
             self._github_address,
             image="",
         ).generate(readme=True)
+        
+        import re
+        text_with_absolute_links = re.sub(
+            r"(\[.*?\])\(((?!http).*?)\)",
+            r"\g<1>(https://hitchdev.com/{0}/\g<2>)".format(self._project_name),
+            self.DIR.gen.joinpath(self._project_name, "docs", "draft", "index.md").text()
+        ).replace("\r\n", "\n")
 
-        self.DIR.gen.joinpath(self._project_name, "docs", "draft", "index.md").copy(
-            self.DIR.gen / self._project_name / "README.md"
+        self.DIR.gen.joinpath(self._project_name, "README.md").write_text(
+            text_with_absolute_links
         )
         self.DIR.gen.joinpath(self._project_name, "docs", "draft", "changelog.md").copy(
             self.DIR.gen / self._project_name / "CHANGELOG.md"
