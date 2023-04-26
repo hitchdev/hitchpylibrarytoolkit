@@ -242,7 +242,7 @@ class ProjectToolkitV2(ProjectToolkit):
 
         ProjectDocumentation(
             storybook,
-            self.DIR.project,
+            self.DIR.gen / self._project_name,
             self.DIR.gen / self._project_name / "docs" / "public",
             self._name,
             self._github_address,
@@ -251,7 +251,7 @@ class ProjectToolkitV2(ProjectToolkit):
 
         ProjectDocumentation(
             storybook,
-            self.DIR.project,
+            self.DIR.gen / self._project_name,
             self.DIR.gen / self._project_name / "docs" / "draft",
             self._name,
             self._github_address,
