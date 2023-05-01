@@ -61,7 +61,7 @@ class ProjectDocumentation:
     def _contents(self, main_folder, folder, readme):
         markdown = ""
         for filepath in sorted(main_folder.joinpath(folder).listdir()):
-            if filepath.name != "index.md":
+            if filepath.name != "index.md" and not filepath.isdir():
                 title = self._title(filepath)
 
                 if title is not None:
@@ -116,12 +116,12 @@ class ProjectDocumentation:
         ]
 
         for folder in doc_directories:
-            snippets_path.joinpath(f"{folder}-contents.txt").write_text(
+            snippets_path.joinpath(f"{folder.replace('/', '-')}-contents.txt").write_text(
                 self._contents(doc_src, folder, readme=readme)
             )
 
         for folder in doc_directories:
-            snippets_path.joinpath(f"{folder}-index-contents.txt").write_text(
+            snippets_path.joinpath(f"{folder.replace('/', '-')}-index-contents.txt").write_text(
                 self._contents(doc_src / folder, "", readme=readme)
             )
 
