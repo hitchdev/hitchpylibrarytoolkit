@@ -1,6 +1,7 @@
 from strictyaml import load
 from commandlib import Command, python_bin
 import hitchpylibrarytoolkit
+from pathquery import pathquery
 
 
 class ProjectDocumentation:
@@ -107,13 +108,19 @@ class ProjectDocumentation:
         snippets_path.joinpath("intro.txt").write_text(
             self._readme_intro() if readme else self._docs_intro()
         )
+        
+        doc_directories = [
+            str(index.relpath(doc_src).dirname())
+            for index in pathquery(doc_src).named("index.md")
+            if index.relpath(doc_src) != "index.md"
+        ]
 
-        for folder in ["why", "approach", "why-not", "using"]:
+        for folder in doc_directories:
             snippets_path.joinpath(f"{folder}-contents.txt").write_text(
                 self._contents(doc_src, folder, readme=readme)
             )
 
-        for folder in ["why", "approach", "why-not", "using"]:
+        for folder in doc_directories:
             snippets_path.joinpath(f"{folder}-index-contents.txt").write_text(
                 self._contents(doc_src / folder, "", readme=readme)
             )
