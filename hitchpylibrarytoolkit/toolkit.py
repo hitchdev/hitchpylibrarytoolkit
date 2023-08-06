@@ -157,13 +157,14 @@ class ProjectToolkit(object):
 
 
 class ProjectToolkitV2(ProjectToolkit):
-    def __init__(self, name, slug, github_address, image=""):
+    def __init__(self, name, slug, github_address, image="", package_name=None):
         self._name = name
         self._project_name = slug
         self._github_address = github_address
         self.DIR = Directories()
         self._path = self.DIR
         self._image = image
+        self._package_name = package_name
 
     def devenv(self):
         env = pyenv.DevelopmentVirtualenv(
@@ -187,6 +188,7 @@ class ProjectToolkitV2(ProjectToolkit):
             testpypi=testpypi,
             dryrun=False,
             python_cmd=Command(relenv.python_path),
+            package_name=self._package_name,
         )
 
     def package_test(self):

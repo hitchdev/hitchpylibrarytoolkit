@@ -4,9 +4,12 @@ import os
 
 
 def deploy(
-    project_name, github_path, temp_path, testpypi=False, dryrun=False, python_cmd=None
+    project_name, github_path, temp_path, testpypi=False, dryrun=False, python_cmd=None, package_name=None
 ):
     git = Command("git")
+    
+    if package_name is None:
+        package_name = project_name
 
     if python_cmd is None:
         python_cmd = python
@@ -21,7 +24,7 @@ def deploy(
     git("clone", "git@github.com:{}.git".format(github_path)).in_dir(temp_path).run()
     project = temp_path / project_name
     version = project.joinpath("VERSION").text().rstrip()
-    initpy = project.joinpath(project_name, "__init__.py")
+    initpy = project.joinpath(package_name, "__init__.py")
     original_initpy_contents = initpy.bytes().decode("utf8")
     initpy.write_text(original_initpy_contents.replace("DEVELOPMENT_VERSION", version))
     python_cmd("-m", "pip", "wheel", ".", "-w", "dist").in_dir(project).run()
@@ -32,7 +35,7 @@ def deploy(
     wheel_args = ["-m", "twine", "upload"]
     if testpypi:
         wheel_args += ["--repository", "testpypi"]
-    wheel_args += ["dist/{}-{}-py3-none-any.whl".format(project_name, version)]
+    wheel_args += ["dist/{}-{}-py3-none-any.whl".format(package_name, version)]
 
     if not dryrun:
         python_cmd(*wheel_args).in_dir(project).with_env(
