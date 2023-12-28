@@ -213,7 +213,7 @@ class DevelopmentVirtualenv(hitchbuild.HitchBuild):
                 ),
                 packages=[
                     PythonRequirements(
-                        ["ensure", "python-slugify"],
+                        (self._project_path / "hitch" / "debugrequirements.txt").read_text().split("\n"),
                     ),
                     PythonRequirements(
                         [
