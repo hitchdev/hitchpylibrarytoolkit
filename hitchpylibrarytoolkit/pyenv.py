@@ -213,7 +213,7 @@ class DevelopmentVirtualenv(hitchbuild.HitchBuild):
                 ),
                 packages=[
                     PythonRequirements(
-                        (self._project_path / "hitch" / "debugrequirements.txt").read_text().split("\n"),
+                        self._debug_requirements.read_text().rstrip().split("\n")
                     ),
                     PythonRequirements(
                         [
