@@ -30,6 +30,7 @@ dependencies = [
     "twine>=0.11.0",
     "flake8>=3.5.0",
     "pip-tools>=6.12.3",
+    "orji",
     "gitpython",
     "black",
     "ipython",
