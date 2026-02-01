@@ -104,7 +104,7 @@ dependencies = [
     "python-slugify==8.0.1",
     "q==2.7",
     "readme-renderer==37.3",
-    "requests==2.28.2",
+    "requests==2.32.4",
     "requests-toolbelt==0.10.1",
     "rfc3986==2.0.0",
     "rich==13.3.3",
