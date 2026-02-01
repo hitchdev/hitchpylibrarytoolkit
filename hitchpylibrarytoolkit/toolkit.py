@@ -4,6 +4,7 @@ from hitchpylibrarytoolkit.docgen import readmegen
 from hitchpylibrarytoolkit.exceptions import ToolkitError
 from hitchpylibrarytoolkit.project_docs import ProjectDocumentation
 from hitchpylibrarytoolkit import pyenv
+from hitchpylibrarytoolkit import astraluv
 import hitchpylibrarytoolkit
 from commandlib import python, python_bin, Command, CommandError
 from hitchstory import StoryCollection
@@ -167,6 +168,15 @@ class ProjectToolkitV2(ProjectToolkit):
         self._package_name = package_name
 
     def devenv(self):
+        devenvironment = astraluv.DevelopmentEnvironment(
+            astraluv.UVEnv(self.DIR.gen / "uv"),
+            self.DIR.project.joinpath("hitch", "devenv.yml"),
+            self.DIR.project.joinpath("hitch", "debugrequirements.txt"),
+            self.DIR.project,
+            self.DIR.project.joinpath("pyproject.toml").text(),
+        )
+        devenvironment.ensure_built()
+
         env = pyenv.DevelopmentVirtualenv(
             pyenv.Pyenv(self.DIR.gen / "pyenv"),
             self.DIR.project.joinpath("hitch", "devenv.yml"),
