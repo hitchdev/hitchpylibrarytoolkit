@@ -55,11 +55,24 @@ class DevelopmentEnvironment(hitchbuild.HitchBuild):
         self._project_path = project_path
         self._pyproject_toml = pyproject_toml
 
+    @property
+    def build_path(self):
+        return self._uvenv.build_path / "devvenv"
+
+    @property
+    def fingerprint_path(self):
+        return self.build_path / "fingerprint.txt"
+
+    @property
+    def python_path(self):
+        return self.build_path / "bin" / "python"
+
     def build(self):
         self._uvenv.ensure_built()
-        assert not self._versions_file.exists()
-        pyversion = self._uvenv.latest_default_production_python_version()
-        self._uvenv.uv("python", "install", pyversion).run()
 
-
-        import IPython ; IPython.embed()
+        if not self.build_path.exists():
+            assert not self._versions_file.exists()
+            pyversion = self._uvenv.latest_default_production_python_version()
+            self._uvenv.uv("python", "install", pyversion).run()
+            self._uvenv.uv("sync", "--python", pyversion, "--project", self._project_path).with_env(UV_PROJECT_ENVIRONMENT=self.build_path).run()
+            self.refingerprint()

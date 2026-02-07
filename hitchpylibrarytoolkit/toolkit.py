@@ -176,16 +176,7 @@ class ProjectToolkitV2(ProjectToolkit):
             self.DIR.project.joinpath("pyproject.toml").text(),
         )
         devenvironment.ensure_built()
-
-        env = pyenv.DevelopmentVirtualenv(
-            pyenv.Pyenv(self.DIR.gen / "pyenv"),
-            self.DIR.project.joinpath("hitch", "devenv.yml"),
-            self.DIR.project.joinpath("hitch", "debugrequirements.txt"),
-            self.DIR.project,
-            self.DIR.project.joinpath("pyproject.toml").text(),
-        )
-        env.ensure_built()
-        return env
+        return devenvironment
 
     def deploy(self, testpypi=False):
         relenv = pyenv.ReleaseVirtualenv(pyenv.Pyenv(self.DIR.gen / "pyenv"))
