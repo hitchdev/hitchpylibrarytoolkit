@@ -20,7 +20,6 @@ class UVEnv(hitchbuild.HitchBuild):
 
     def build(self):
         if self.incomplete() or self._uv_version.changed:
-            assert "0.9.5" in self.uv("--version").output()
             self.build_path.rmtree(ignore_errors=True)
             self.build_path.mkdir()
             self.build_path.joinpath("bin").mkdir()
