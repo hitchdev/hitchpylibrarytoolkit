@@ -73,5 +73,5 @@ class DevelopmentEnvironment(hitchbuild.HitchBuild):
             assert not self._versions_file.exists()
             pyversion = self._uvenv.latest_default_production_python_version()
             self._uvenv.uv("python", "install", pyversion).run()
-            self._uvenv.uv("sync", "--python", pyversion, "--project", self._project_path).with_env(UV_PROJECT_ENVIRONMENT=self.build_path).run()
+            self._uvenv.uv("sync", "--extra", "test", "--python", pyversion, "--project", self._project_path).with_env(UV_PROJECT_ENVIRONMENT=self.build_path).run()
             self.refingerprint()
