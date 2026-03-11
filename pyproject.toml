@@ -122,7 +122,7 @@ dependencies = [
     "uvloop==0.22.1",
     "wcwidth==0.2.6",
     "webencodings==0.5.1",
-    "wheel==0.40.0",
+    "wheel==0.46.2",
     "zipp==3.15.0",
     "natsort==8.4.0",
 ]
