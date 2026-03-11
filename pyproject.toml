@@ -118,7 +118,7 @@ dependencies = [
     "tomli==2.0.1",
     "traitlets==5.9.0",
     "twine==4.0.2",
-    "urllib3==1.26.15",
+    "urllib3==2.6.3",
     "uvloop==0.22.1",
     "wcwidth==0.2.6",
     "webencodings==0.5.1",
